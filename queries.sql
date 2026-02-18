@@ -27,6 +27,28 @@ GROUP BY hour_of_day
 ORDER BY hour_of_day;
 */
 
+
+/*  Top 5 orders that spent the most money in a single transaction. 
+
+SELECT order_id, total_price
+FROM Orders
+ORDER BY total_price DESC
+LIMIT 5;
+
+*/
+
+
+/* Question: List the average order value
+
+SELECT ROUND(AVG(total_price), 2) AS avg_ticket_price FROM Orders;
+
+*/
+
+
+/* Question: What is the total count of items in the inventory currently?
+SELECT SUM(quantity) as total_stock_count
+FROM Inventory;
+*/
 /* Menu Item Inventory
 SELECT 
     m.item_name, 
