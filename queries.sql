@@ -26,3 +26,15 @@ FROM Orders
 GROUP BY hour_of_day
 ORDER BY hour_of_day;
 */
+
+/* Menu Item Inventory
+SELECT 
+    m.item_name, 
+    COUNT(mi.inventory_id) AS total_inventory_items
+FROM Menu m
+JOIN Menu_Ingredients mi ON m.id = mi.menu_id
+GROUP BY m.item_name
+ORDER BY total_inventory_items DESC;
+/*
+
+
