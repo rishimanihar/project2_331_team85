@@ -83,3 +83,11 @@ GROUP BY m.item_name
 ORDER BY volume DESC
 LIMIT 1;
 
+/* Order Customization Depth*/
+SELECT ROUND(AVG(item_count), 2) as avg_items_per_order
+FROM (
+    SELECT order_id, COUNT(menu_id) as item_count
+    FROM Order_Items
+    GROUP BY order_id
+) AS counts;
+
