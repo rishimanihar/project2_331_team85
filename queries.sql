@@ -44,3 +44,11 @@ WHERE quantity < 50
 ORDER BY quantity ASC;
 /*
 
+/*  Ingredient Usage Report
+SELECT i.item_name, SUM(mi.quantity_used) as total_consumed
+FROM Order_Items oi
+JOIN Menu_Ingredients mi ON oi.menu_id = mi.menu_id
+JOIN Inventory i ON mi.inventory_id = i.id
+GROUP BY i.item_name
+ORDER BY total_consumed DESC;
+/*
