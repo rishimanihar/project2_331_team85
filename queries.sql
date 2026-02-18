@@ -49,3 +49,7 @@ SELECT ROUND(AVG(total_price), 2) AS avg_ticket_price FROM Orders;
 SELECT SUM(quantity) as total_stock_count
 FROM Inventory;
 */
+
+/* testing branch */
+
+
