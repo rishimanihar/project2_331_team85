@@ -83,7 +83,7 @@ GROUP BY m.item_name
 ORDER BY volume DESC
 LIMIT 1;
 
-/* Order Customization Depth*/
+/* Order Customization Depth */
 SELECT ROUND(AVG(item_count), 2) as avg_items_per_order
 FROM (
     SELECT order_id, COUNT(menu_id) as item_count
@@ -91,3 +91,12 @@ FROM (
     GROUP BY order_id
 ) AS counts;
 
+/* Revenue by Menu Category */
+SELECT 
+    CASE WHEN item_name LIKE '%Milk Tea%' THEN 'Milk Tea'
+         WHEN item_name LIKE '%Fruit%' THEN 'Fruit Tea'
+         ELSE 'Other' END as category,
+    SUM(m.price) as revenue
+FROM Order_Items oi
+JOIN Menu m ON oi.menu_id = m.id
+GROUP BY category;
