@@ -37,4 +37,10 @@ GROUP BY m.item_name
 ORDER BY total_inventory_items DESC;
 /*
 
+/* Low Inventory Warning
+SELECT item_name, quantity, unit
+FROM Inventory
+WHERE quantity < 50
+ORDER BY quantity ASC;
+/*
 
