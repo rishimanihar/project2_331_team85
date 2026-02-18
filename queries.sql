@@ -72,3 +72,14 @@ JOIN Menu_Ingredients mi ON oi.menu_id = mi.menu_id
 JOIN Inventory i ON mi.inventory_id = i.id
 GROUP BY i.item_name
 ORDER BY total_consumed DESC;
+
+/* Peak Hour Performance */
+SELECT m.item_name, COUNT(*) as volume
+FROM Order_Items oi
+JOIN Orders o ON oi.order_id = o.order_id
+JOIN Menu m ON oi.menu_id = m.id
+WHERE EXTRACT(HOUR FROM o.order_time) = 12
+GROUP BY m.item_name
+ORDER BY volume DESC
+LIMIT 1;
+
