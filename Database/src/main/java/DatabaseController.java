@@ -2,14 +2,21 @@ import java.sql.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;     // Added
+import javafx.scene.control.TableView; // Added
 import javafx.stage.Stage;
 
 public class DatabaseController {
     @FXML private Button queryButton;
-    @FXML private TextArea resultArea;
     @FXML private Button closeButton;
     
-    // Updated URL from your Swing code
+    // Changed from resultArea to menuGrid to match FXML fx:id
+    @FXML private TextArea menuGrid; 
+
+    // Added missing fields from FXML
+    @FXML private TableView<?> cartList; 
+    @FXML private Label totalLabel;
+
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
 
     @FXML
@@ -19,35 +26,33 @@ public class DatabaseController {
     }
 
     private void runQuery() {
-        resultArea.setText("Connecting to database...");
+        menuGrid.setText("Connecting to database..."); // Updated name
         StringBuilder results = new StringBuilder();
 
         try {
             dbSetup my = new dbSetup();
             Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
             Statement stmt = conn.createStatement();
-            
-            // Step 2 from your TODO: Relevant query
+
             String sqlStatement = "SELECT item_name FROM menu";
             ResultSet rs = stmt.executeQuery(sqlStatement);
 
             while (rs.next()) {
-                // Retrieves data from the "item_name" column
                 results.append(rs.getString("item_name")).append("\n");
             }
 
-            resultArea.setText(results.toString());
+            menuGrid.setText(results.toString()); // Updated name
 
             rs.close();
             stmt.close();
             conn.close();
         } catch (Exception e) {
-            resultArea.setText("Error: " + e.getMessage());
+            menuGrid.setText("Error: " + e.getMessage()); // Updated name
             e.printStackTrace();
         }
     }
 
-    private void closeWindow() { 
+    private void closeWindow() {
         Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.close();
     }
