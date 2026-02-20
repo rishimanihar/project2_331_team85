@@ -1,0 +1,13 @@
+# Ignore Gradle build folders
+.gradle/
+build/
+
+# Ignore compiled Java files
+*.class
+bin/
+
+# Ignore your sensitive database setup
+src/main/java/dbSetup.java
+
+# Ignore local OS junk
+.DS_Store
