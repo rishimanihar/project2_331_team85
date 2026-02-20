@@ -1,0 +1,64 @@
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+
+public class cashier_POS extends Application {
+
+    @Override
+    public void start(Stage primaryStage) {
+        VBox leftPane = new VBox(10); 
+        leftPane.setPrefWidth(150);
+        leftPane.getChildren().addAll(
+            new Button("Milk Teas"), 
+            new Button("Fruit Teas"), 
+            new Button("Snacks"),
+            new Button("Inventory")
+        );
+
+        BorderPane centerPane = new BorderPane();
+        
+        GridPane itemGrid = new GridPane();
+        itemGrid.setHgap(10);
+        itemGrid.setVgap(10);
+        itemGrid.add(new Button("Classic Milk Tea"), 0, 0);
+        itemGrid.add(new Button("Thai Tea"), 1, 0);
+        itemGrid.add(new Button("Honeydew Milk"), 0, 1);
+        itemGrid.add(new Button("Rose Milk Tea"), 1, 1);
+        centerPane.setCenter(itemGrid);
+
+        HBox modsPane = new HBox(10);
+        modsPane.getChildren().addAll(
+            new Label("Sugar:"), new Button("0%"), new Button("50%"), new Button("100%"),
+            new Label("Ice:"), new Button("None"), new Button("Reg")
+        );
+        centerPane.setBottom(modsPane);
+
+        VBox rightPane = new VBox(10);
+        rightPane.setPrefWidth(250);
+        
+        ListView<String> cartList = new ListView<>();
+        
+        rightPane.getChildren().addAll(
+            new Label("Order Summary"), 
+            cartList, 
+            new Button("Delete Item"), 
+            new Button("Checkout")
+        );
+
+        BorderPane rootLayout = new BorderPane();
+        rootLayout.setLeft(leftPane);
+        rootLayout.setCenter(centerPane);
+        rootLayout.setRight(rightPane);
+
+        Scene scene = new Scene(rootLayout, 800, 500);
+        primaryStage.setTitle("Basic Bubble Tea POS");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
