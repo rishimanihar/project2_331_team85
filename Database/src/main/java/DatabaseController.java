@@ -1,55 +1,83 @@
 import java.sql.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.Label;     // Added
-import javafx.scene.control.TableView; // Added
+import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.scene.layout.FlowPane;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class DatabaseController {
+    // --- FXML UI Elements ---
     @FXML private Button queryButton;
     @FXML private Button closeButton;
-    
-    // Changed from resultArea to menuGrid to match FXML fx:id
-    @FXML private TextArea menuGrid; 
-
-    // Added missing fields from FXML
-    @FXML private TableView<?> cartList; 
+    @FXML private Button submitOrderButton;
+    @FXML private FlowPane buttonContainer;
     @FXML private Label totalLabel;
+    
+    // The TableView and its columns
+    @FXML private TableView<MenuItem> cartList;
+    @FXML private TableColumn<MenuItem, String> nameColumn;
+    @FXML private TableColumn<MenuItem, Double> priceColumn;
 
+    // --- Database & Data Variables ---
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
+    private ObservableList<MenuItem> cartData = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        queryButton.setOnAction(event -> runQuery());
+        // Link TableColumns to the "name" and "price" getters in MenuItem.java
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        
+        // Attach the list to the table
+        cartList.setItems(cartData);
+
+        // Set Button Actions
+        queryButton.setOnAction(event -> loadMenuButtons());
         closeButton.setOnAction(event -> closeWindow());
+        
+        // Load menu buttons automatically on startup
+        loadMenuButtons();
     }
 
-    private void runQuery() {
-        menuGrid.setText("Connecting to database..."); // Updated name
-        StringBuilder results = new StringBuilder();
+    private void loadMenuButtons() {
+        buttonContainer.getChildren().clear(); 
+        String sql = "SELECT item_name, price FROM menu";
 
-        try {
-            dbSetup my = new dbSetup();
-            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
-            Statement stmt = conn.createStatement();
-
-            String sqlStatement = "SELECT item_name FROM menu";
-            ResultSet rs = stmt.executeQuery(sqlStatement);
+        try (Connection conn = DriverManager.getConnection(DB_URL, dbSetup.user, dbSetup.pswd);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                results.append(rs.getString("item_name")).append("\n");
+                String name = rs.getString("item_name");
+                double price = rs.getDouble("price");
+
+                Button itemButton = new Button(name + "\n$" + String.format("%.2f", price));
+                itemButton.setPrefSize(120, 80); 
+                itemButton.setOnAction(e -> addToCart(name, price));
+
+                buttonContainer.getChildren().add(itemButton);
             }
-
-            menuGrid.setText(results.toString()); // Updated name
-
-            rs.close();
-            stmt.close();
-            conn.close();
-        } catch (Exception e) {
-            menuGrid.setText("Error: " + e.getMessage()); // Updated name
-            e.printStackTrace();
+        } catch (SQLException e) {
+            System.err.println("[LOG] Database error: " + e.getMessage());
         }
+    }
+
+    private void addToCart(String name, double price) {
+        cartData.add(new MenuItem(name, price));
+        updateTotal();
+    }
+
+    private void updateTotal() {
+        double total = 0;
+        for (MenuItem item : cartData) {
+            total += item.getPrice();
+        }
+        totalLabel.setText(String.format("Total: $%.2f", total));
     }
 
     private void closeWindow() {

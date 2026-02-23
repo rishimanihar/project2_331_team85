@@ -8,7 +8,7 @@ public class DatabaseApp extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("database-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
-        stage.setTitle("AWS PostgreSQL Query Example");
+        stage.setTitle("POS System");
         stage.setScene(scene);
         stage.show();
     }
