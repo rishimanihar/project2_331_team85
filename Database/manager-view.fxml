@@ -70,7 +70,7 @@
         <ListView fx:id="chatList" VBox.vgrow="ALWAYS" />
         <HBox spacing="5.0">
             <TextField fx:id="chatInput" HBox.hgrow="ALWAYS" promptText="Type a message..." />
-            <Button text="Send" />
+            <Button fx:id="sendButton" text="Send" />
         </HBox>
     </VBox>
 </GridPane>

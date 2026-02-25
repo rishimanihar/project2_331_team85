@@ -8,6 +8,7 @@ public class DatabaseController {
     @FXML private Button queryButton;
     @FXML private TextArea resultArea;
     @FXML private Button closeButton;
+    @FXML private Button sendButton;
     
     // Updated URL from your Swing code
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
@@ -16,6 +17,8 @@ public class DatabaseController {
     public void initialize() {
         queryButton.setOnAction(event -> runQuery());
         closeButton.setOnAction(event -> closeWindow());
+        sendButton.setOnAction(event -> sendMessage());
+        chatInput.setOnAction(event -> sendMessage());
     }
 
     private void runQuery() {
