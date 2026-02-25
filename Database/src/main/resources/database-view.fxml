@@ -17,11 +17,30 @@
             <VBox spacing="10">
               <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
               <Label text="Menu Items" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+              
               <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
                 <content>
                   <FlowPane fx:id="buttonContainer" hgap="10.0" vgap="10.0" prefWrapLength="600.0" />
                 </content>
               </ScrollPane>
+
+              <VBox spacing="10" alignment="CENTER" style="-fx-padding: 15px; -fx-background-color: #f9f9f9; -fx-border-color: #cccccc; -fx-border-width: 2 0 0 0;">
+                  <Label text="Drink Customization" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                  <HBox spacing="15" alignment="CENTER">
+                      <Label text="Sweetness:" style="-fx-font-size: 14px;"/>
+                      <Button text="0%" fx:id="btnSweet0" onAction="#handleCustomizationClick"/>
+                      <Button text="50%" fx:id="btnSweet50" onAction="#handleCustomizationClick"/>
+                      <Button text="100%" fx:id="btnSweet100" onAction="#handleCustomizationClick"/>
+                      <Button text="120%" fx:id="btnSweet120" onAction="#handleCustomizationClick"/>
+                  </HBox>
+                  <HBox spacing="15" alignment="CENTER">
+                      <Label text="Ice Level:" style="-fx-font-size: 14px;"/>
+                      <Button text="None" fx:id="btnIceNone" onAction="#handleCustomizationClick"/>
+                      <Button text="Less" fx:id="btnIceLess" onAction="#handleCustomizationClick"/>
+                      <Button text="Regular" fx:id="btnIceReg" onAction="#handleCustomizationClick"/>
+                      <Button text="Extra" fx:id="btnIceExtra" onAction="#handleCustomizationClick"/>
+                  </HBox>
+              </VBox>
             </VBox>
           </center>
           <right>
@@ -36,7 +55,7 @@
               </TableView>
               <Label fx:id="totalLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" text="Total: \$0.00" />
               <Button fx:id="queryButton" maxWidth="Infinity" text="Refresh Menu" />
-              <Button fx:id="submitOrderButton" maxWidth="Infinity" style="-fx-base: #2ecc71; -fx-font-weight: bold;" text="Submit Order" />
+              <Button fx:id="submitOrderButton" maxWidth="Infinity" style="-fx-base: #2ecc71; -fx-font-weight: bold;" text="Submit Order" onAction="#handleSubmitOrder" />
               <Separator/>
               <Button fx:id="closeButton" maxWidth="Infinity" text="Exit Application" style="-fx-base: #e74c3c; -fx-text-fill: white;" />
             </VBox>
@@ -49,36 +68,68 @@
       <content>
         <HBox spacing="15">
           <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
-          
+
           <VBox spacing="15" HBox.hgrow="ALWAYS">
+            <Label text="Operational Overview" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
             <HBox spacing="20">
-               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd;">
+               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5;">
                   <Label text="Total Orders" style="-fx-text-fill: #7f8c8d;"/>
                   <Label fx:id="ordersLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
                </VBox>
-               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd;">
+               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd; -fx-border-radius: 5;">
                   <Label text="Total Revenue" style="-fx-text-fill: #7f8c8d;"/>
                   <Label fx:id="revenueLabel" text="\$0.00" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
                </VBox>
             </HBox>
-            
-            <LineChart fx:id="trendsChart" title="Sales Trends (Last 14 Days)" VBox.vgrow="ALWAYS">
+
+            <LineChart fx:id="trendsChart" title="Sales Trends (By Day of Week)" VBox.vgrow="ALWAYS">
               <xAxis><CategoryAxis side="BOTTOM" /></xAxis>
               <yAxis><NumberAxis side="LEFT" /></yAxis>
             </LineChart>
+
+            <VBox spacing="5" prefHeight="150" style="-fx-border-color: #ccc; -fx-padding: 5;">
+                <Label text="Manager Logs / Chat" style="-fx-font-weight: bold;"/>
+                <ListView fx:id="chatList" VBox.vgrow="ALWAYS" />
+                <HBox spacing="5">
+                    <TextField fx:id="chatInput" HBox.hgrow="ALWAYS" promptText="Enter note..."/>
+                    <Button fx:id="sendButton" text="Send"/>
+                </HBox>
+            </VBox>
           </VBox>
 
-          <VBox spacing="15" prefWidth="350">
+          <VBox spacing="15" prefWidth="400">
+            
+            <Label text="Menu Management" style="-fx-font-weight: bold;"/>
+            <TableView fx:id="menuTable" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="menuIdCol" text="ID" prefWidth="50" />
+                    <TableColumn fx:id="menuNameCol" text="Name" prefWidth="150" />
+                    <TableColumn fx:id="menuPriceCol" text="Price" prefWidth="100" />
+                </columns>
+            </TableView>
+            <VBox spacing="5" style="-fx-background-color: #eee; -fx-padding: 10;">
+                <TextField fx:id="menuNameInput" promptText="Item Name" />
+                <HBox spacing="10">
+                    <TextField fx:id="menuPriceInput" promptText="Price" HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="addMenuBtn" text="Add to Menu" prefWidth="120"/>
+                </HBox>
+                <Label fx:id="menuStatusLabel" text="" style="-fx-text-fill: #27ae60;"/>
+            </VBox>
+
+            <Separator/>
+
             <Label text="Inventory Status" style="-fx-font-weight: bold;"/>
-            <TableView fx:id="inventoryTable" prefHeight="300">
+            <TableView fx:id="inventoryTable" prefHeight="200">
               <columns>
                 <TableColumn fx:id="invNameCol" prefWidth="150" text="Item" />
                 <TableColumn fx:id="invQtyCol" prefWidth="80" text="Qty" />
                 <TableColumn fx:id="invUnitCol" prefWidth="80" text="Unit" />
               </columns>
             </TableView>
-            
-            <Label text="Employee Schedule" style="-fx-font-weight: bold;"/>
+
+            <Separator/>
+
+            <Label text="Employee Schedule (Randomized)" style="-fx-font-weight: bold;"/>
             <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
           </VBox>
         </HBox>
