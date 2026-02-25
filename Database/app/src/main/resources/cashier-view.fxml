@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+         prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE" 
+         xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
+         fx:controller="CashierController">
+  <tabs>
+    <Tab text="Cashier">
+      <content>
+        <BorderPane>
+          <center>
+            <VBox spacing="10">
+              <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+              <Label text="Menu Items" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
+              
+              <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+                <content>
+                  <FlowPane fx:id="buttonContainer" hgap="10.0" vgap="10.0" prefWrapLength="600.0" />
+                </content>
+              </ScrollPane>
+
+              <VBox spacing="10" alignment="CENTER" style="-fx-padding: 15px; -fx-background-color: #f9f9f9; -fx-border-color: #cccccc; -fx-border-width: 2 0 0 0;">
+                  <Label text="Drink Customization" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+                  
+                  <HBox spacing="15" alignment="CENTER">
+                      <Label text="Sweetness:" style="-fx-font-size: 14px;"/>
+                      <Button text="0%" fx:id="btnSweet0" onAction="#handleCustomizationClick"/>
+                      <Button text="50%" fx:id="btnSweet50" onAction="#handleCustomizationClick"/>
+                      <Button text="100%" fx:id="btnSweet100" onAction="#handleCustomizationClick"/>
+                      <Button text="120%" fx:id="btnSweet120" onAction="#handleCustomizationClick"/>
+                  </HBox>
+
+                  <HBox spacing="15" alignment="CENTER">
+                      <Label text="Ice Level:" style="-fx-font-size: 14px;"/>
+                      <Button text="None" fx:id="btnIceNone" onAction="#handleCustomizationClick"/>
+                      <Button text="Less" fx:id="btnIceLess" onAction="#handleCustomizationClick"/>
+                      <Button text="Regular" fx:id="btnIceReg" onAction="#handleCustomizationClick"/>
+                      <Button text="Extra" fx:id="btnIceExtra" onAction="#handleCustomizationClick"/>
+                  </HBox>
+              </VBox>
+              </VBox>
+          </center>
+          <right>
+            <VBox spacing="10" prefWidth="300.0" style="-fx-background-color: #f4f4f4;">
+              <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+              <Label text="Current Order" style="-fx-font-weight: bold;"/>
+              <ListView fx:id="cartList" VBox.vgrow="ALWAYS" />
+              <Label fx:id="totalLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" text="Total: \$0.00" />
+              <Button fx:id="queryButton" maxWidth="Infinity" text="Refresh Menu" />
+              <Button fx:id="submitOrderButton" maxWidth="Infinity" style="-fx-base: #2ecc71; -fx-font-weight: bold;" text="Submit Order" />
+              <Separator/>
+              <Button fx:id="closeButton" maxWidth="Infinity" text="Exit Application" style="-fx-base: #e74c3c; -fx-text-fill: white;" />
+            </VBox>
+          </right>
+        </BorderPane>
+      </content>
+    </Tab>
+
+    <Tab text="Manager Dashboard">
+      <content>
+        <HBox spacing="15">
+          <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+          
+          <VBox spacing="15" HBox.hgrow="ALWAYS">
+            <HBox spacing="20">
+               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd;">
+                  <Label text="Total Orders" style="-fx-text-fill: #7f8c8d;"/>
+                  <Label fx:id="ordersLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+               </VBox>
+               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd;">
+                  <Label text="Total Revenue" style="-fx-text-fill: #7f8c8d;"/>
+                  <Label fx:id="revenueLabel" text="\$0.00" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+               </VBox>
+            </HBox>
+            
+            <LineChart fx:id="trendsChart" title="Sales Trends (Last 14 Days)" VBox.vgrow="ALWAYS">
+              <xAxis><CategoryAxis side="BOTTOM" /></xAxis>
+              <yAxis><NumberAxis side="LEFT" /></yAxis>
+            </LineChart>
+          </VBox>
+
+          <VBox spacing="15" prefWidth="350">
+            <Label text="Inventory Status" style="-fx-font-weight: bold;"/>
+            <TableView fx:id="inventoryTable" prefHeight="300">
+              <columns>
+                <TableColumn fx:id="invNameCol" prefWidth="150" text="Item" />
+                <TableColumn fx:id="invQtyCol" prefWidth="80" text="Qty" />
+                <TableColumn fx:id="invUnitCol" prefWidth="80" text="Unit" />
+              </columns>
+            </TableView>
+          </VBox>
+
+          <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="2">
+                <Label text="Employee Schedule" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
+                
+                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                    <TextField fx:id="empNameInput" promptText="Employee Name" HBox.hgrow="ALWAYS" />
+                    <TextField fx:id="empRoleInput" promptText="Role (e.g. Cashier)" prefWidth="120.0" />
+                    <Button fx:id="addEmpBtn" text="Add Emp" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" />
+                </HBox>
+                <Label fx:id="empStatusLabel" text="" textFill="red"/>
+            </VBox>
+        </HBox>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane tabClosingPolicy="UNAVAILABLE" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ManagerDashboardController">
+    
+    <Tab text="Main Dashboard">
+        <GridPane hgap="15.0" vgap="15.0">
+            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+            <columnConstraints>
+                <ColumnConstraints percentWidth="40.0" />
+                <ColumnConstraints percentWidth="60.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints percentHeight="35.0" />
+                <RowConstraints percentHeight="45.0" />
+                <RowConstraints percentHeight="20.0" />
+            </rowConstraints>
+
+            <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="2">
+                <Label text="Employee Schedule" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
+            </VBox>
+
+            <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="Inventory List" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <TableView fx:id="inventoryTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="invNameCol" prefWidth="250.0" text="Item Name" />
+                        <TableColumn fx:id="invQtyCol" prefWidth="100.0" text="Quantity" />
+                        <TableColumn fx:id="invUnitCol" prefWidth="100.0" text="Unit" />
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Label text="Item Trends (Sales Over Time)" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <LineChart fx:id="trendsChart" VBox.vgrow="ALWAYS">
+                    <xAxis><CategoryAxis label="Date" /></xAxis>
+                    <yAxis><NumberAxis label="Revenue (USD)" /></yAxis>
+                </LineChart>
+            </VBox>
+
+            <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                <Label text="Quarterly Overview" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <GridPane hgap="10" vgap="10" style="-fx-border-color: gray; -fx-padding: 10; -fx-border-radius: 5;">
+                    <Label text="Total Revenue:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                    <Label fx:id="revenueLabel" text="0.00" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                    <Label text="Total Orders:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                    <Label fx:id="ordersLabel" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                </GridPane>
+            </VBox>
+
+            <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <Label text="Employee Chatbox" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <ListView fx:id="chatList" VBox.vgrow="ALWAYS" />
+                <HBox spacing="5.0">
+                    <TextField fx:id="chatInput" HBox.hgrow="ALWAYS" promptText="Type a message..." />
+                    <Button fx:id="sendButton" text="Send" />
+                </HBox>
+            </VBox>
+        </GridPane>
+    </Tab>
+
+    <Tab text="Menu Management">
+        <VBox alignment="CENTER" spacing="15.0">
+            <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+            <Label text="Live Database Menu" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+            
+            <TableView fx:id="menuTable" prefHeight="400.0" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="menuIdCol" prefWidth="50.0" text="ID" />
+                    <TableColumn fx:id="menuNameCol" prefWidth="300.0" text="Drink Name" />
+                    <TableColumn fx:id="menuPriceCol" prefWidth="150.0" text="Price ($)" />
+                </columns>
+            </TableView>
+
+            <HBox alignment="CENTER" spacing="10.0">
+                <TextField fx:id="menuNameInput" promptText="New Drink Name" prefWidth="200.0" />
+                <TextField fx:id="menuPriceInput" promptText="Price (e.g. 15.50)" prefWidth="100.0" />
+                <Button fx:id="addMenuBtn" text="Add Item to Database" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;" />
+            </HBox>
+            <Label fx:id="menuStatusLabel" text="Ready" textFill="blue"/>
+        </VBox>
+    </Tab>
+
+</TabPane>
