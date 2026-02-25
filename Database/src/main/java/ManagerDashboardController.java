@@ -80,6 +80,13 @@ public class ManagerDashboardController {
         if (queryButton != null) queryButton.setOnAction(event -> loadMenuButtons());
         if (sendButton != null) sendButton.setOnAction(e -> sendMessage());
         if (addMenuBtn != null) addMenuBtn.setOnAction(e -> addMenuItemToDB());
+	
+	menuTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+    if (newSelection != null) {
+        menuNameInput.setText(newSelection.getProductName());
+        menuPriceInput.setText(String.valueOf(newSelection.getPrice()));
+    }
+});
         
         chatList.getItems().add("System: Welcome to the Manager Dashboard.");
     }
@@ -203,6 +210,8 @@ public class ManagerDashboardController {
             menuTable.setItems(menuList);
         } catch (SQLException e) { e.printStackTrace(); }
     }
+    
+    @FXML
     private void addMenuItemToDB() {
     String name = menuNameInput.getText().trim();
     String priceText = menuPriceInput.getText().trim();
@@ -282,4 +291,45 @@ public class ManagerDashboardController {
         String pref = val.contains("%") ? "  - Sugar: " : "  - Ice: ";
         cartData.add(new Product(0, pref + val, 0.00));
     }
+
+    @FXML
+private void handleUpdateMenu() {
+    // Get the item currently selected in the Manager's table
+    Product selected = menuTable.getSelectionModel().getSelectedItem();
+    
+    if (selected == null) {
+        menuStatusLabel.setText("Error: Select an item from the table to update.");
+        return;
+    }
+
+    String newName = menuNameInput.getText().trim();
+    String newPriceText = menuPriceInput.getText().trim();
+
+    if (newName.isEmpty() || newPriceText.isEmpty()) {
+        menuStatusLabel.setText("Error: Name and Price cannot be empty.");
+        return;
+    }
+
+    String sql = "UPDATE menu SET item_name = ?, price = ? WHERE id = ?";
+
+    try (Connection conn = DriverManager.getConnection(DB_URL, dbSetup.user, dbSetup.pswd);
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        pstmt.setString(1, newName);
+        pstmt.setDouble(2, Double.parseDouble(newPriceText));
+        pstmt.setInt(3, selected.getId()); // Uses the existing ID from the selected row
+        
+        int rowsAffected = pstmt.executeUpdate();
+        if (rowsAffected > 0) {
+            menuStatusLabel.setText("Successfully updated: " + newName);
+            loadMenuTable();   // Refresh the manager's table
+            loadMenuButtons(); // Refresh the cashier's grid buttons
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        menuStatusLabel.setText("Update failed. Check database connection.");
+    }
+}
+
+
 }
