@@ -7,7 +7,7 @@
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
          prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE" 
          xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-         fx:controller="ManagerDashboardController">
+         fx:controller="CashierController">
   <tabs>
     <Tab text="Cashier">
       <content>
@@ -48,12 +48,7 @@
             <VBox spacing="10" prefWidth="300.0" style="-fx-background-color: #f4f4f4;">
               <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
               <Label text="Current Order" style="-fx-font-weight: bold;"/>
-              <TableView fx:id="cartList" VBox.vgrow="ALWAYS">
-                <columns>
-                  <TableColumn fx:id="nameColumn" prefWidth="180.0" text="Item" />
-                  <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Price" />
-                </columns>
-              </TableView>
+              <ListView fx:id="cartList" VBox.vgrow="ALWAYS" />
               <Label fx:id="totalLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" text="Total: \$0.00" />
               <Button fx:id="queryButton" maxWidth="Infinity" text="Refresh Menu" />
               <Button fx:id="submitOrderButton" maxWidth="Infinity" style="-fx-base: #2ecc71; -fx-font-weight: bold;" text="Submit Order" />
@@ -97,10 +92,19 @@
                 <TableColumn fx:id="invUnitCol" prefWidth="80" text="Unit" />
               </columns>
             </TableView>
-            
-            <Label text="Employee Schedule" style="-fx-font-weight: bold;"/>
-            <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
           </VBox>
+
+          <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="2">
+                <Label text="Employee Schedule" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+                <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
+                
+                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                    <TextField fx:id="empNameInput" promptText="Employee Name" HBox.hgrow="ALWAYS" />
+                    <TextField fx:id="empRoleInput" promptText="Role (e.g. Cashier)" prefWidth="120.0" />
+                    <Button fx:id="addEmpBtn" text="Add Emp" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" />
+                </HBox>
+                <Label fx:id="empStatusLabel" text="" textFill="red"/>
+            </VBox>
         </HBox>
       </content>
     </Tab>

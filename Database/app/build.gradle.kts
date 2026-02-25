@@ -42,5 +42,5 @@ javafx {
 
 application {
     // If you added 'package pos;' to your Java file, change this to "pos.DatabaseApp"
-    mainClass.set("pos.DatabaseApp")
+    mainClass.set("DatabaseApp")
 }

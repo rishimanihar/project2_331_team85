@@ -25,6 +25,13 @@
             <VBox spacing="5.0" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.rowSpan="2">
                 <Label text="Employee Schedule" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
                 <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
+                
+                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                    <TextField fx:id="empNameInput" promptText="Employee Name" HBox.hgrow="ALWAYS" />
+                    <TextField fx:id="empRoleInput" promptText="Role (e.g. Cashier)" prefWidth="120.0" />
+                    <Button fx:id="addEmpBtn" text="Add Emp" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" />
+                </HBox>
+                <Label fx:id="empStatusLabel" text="" textFill="red"/>
             </VBox>
 
             <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
@@ -36,6 +43,14 @@
                         <TableColumn fx:id="invUnitCol" prefWidth="100.0" text="Unit" />
                     </columns>
                 </TableView>
+                
+                <HBox spacing="10.0" alignment="CENTER_LEFT">
+                    <TextField fx:id="invNameInput" promptText="Item Name" prefWidth="150.0" />
+                    <TextField fx:id="invQtyInput" promptText="Qty" prefWidth="60.0" />
+                    <TextField fx:id="invUnitInput" promptText="Unit (e.g. Lbs)" prefWidth="100.0" />
+                    <Button fx:id="addInvBtn" text="Add to Inventory" style="-fx-background-color: #3498db; -fx-text-fill: white;" />
+                </HBox>
+                <Label fx:id="invStatusLabel" text="" textFill="red"/>
             </VBox>
 
             <VBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">

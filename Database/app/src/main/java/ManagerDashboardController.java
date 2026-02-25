@@ -22,6 +22,12 @@ public class ManagerDashboardController {
     @FXML private TableColumn<Models.InventoryItem, Integer> invQtyCol;
     @FXML private TableColumn<Models.InventoryItem, String> invUnitCol;
 
+    @FXML private TextField invNameInput;
+    @FXML private TextField invQtyInput;
+    @FXML private TextField invUnitInput;
+    @FXML private Button addInvBtn;
+    @FXML private Label invStatusLabel; 
+
     // Trends UI
     @FXML private LineChart<String, Number> trendsChart;
 
@@ -44,6 +50,12 @@ public class ManagerDashboardController {
     @FXML private TextField menuPriceInput;
     @FXML private Button addMenuBtn;
     @FXML private Label menuStatusLabel;
+
+    // Employee UI
+    @FXML private TextField empNameInput;
+    @FXML private TextField empRoleInput;
+    @FXML private Button addEmpBtn;
+    @FXML private Label empStatusLabel;
 
 
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
@@ -75,6 +87,12 @@ public class ManagerDashboardController {
         // Load the menu from DB and set button action
         loadMenuData();
         addMenuBtn.setOnAction(e -> addMenuItemToDB());
+
+        // Inventory addition
+        addInvBtn.setOnAction(e -> addInventoryItemToDB());
+
+        // Employee addition
+        addEmpBtn.setOnAction(e -> addEmployeeToDB());
     }
 
     private void sendMessage() {
@@ -89,7 +107,7 @@ public class ManagerDashboardController {
         ObservableList<Models.InventoryItem> invList = FXCollections.observableArrayList();
         try {
             dbSetup my = new dbSetup();
-            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             
             // Querying the inventory table
@@ -121,7 +139,7 @@ public class ManagerDashboardController {
                     "ORDER BY EXTRACT(ISODOW FROM order_time)";
         try {
             dbSetup my = new dbSetup();
-            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
              
@@ -150,7 +168,7 @@ public class ManagerDashboardController {
                      
         try {
             dbSetup my = new dbSetup();
-            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
             
@@ -171,12 +189,12 @@ public class ManagerDashboardController {
         // Fetch employees
         try {
             dbSetup my = new dbSetup();
-            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT name, role FROM employees");
             
             while (rs.next()) {
-                employeeNames.add(rs.getString("role"));
+                employeeNames.add(rs.getString("name"));
             }
             conn.close();
         } catch (Exception e) {
@@ -203,7 +221,7 @@ public class ManagerDashboardController {
         ObservableList<Models.MenuItem> menuList = FXCollections.observableArrayList();
         try {
             dbSetup my = new dbSetup();
-            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            Connection conn = getConnection();
             Statement stmt = conn.createStatement();
             
             // Query your menu table
@@ -235,9 +253,9 @@ public class ManagerDashboardController {
             double price = Double.parseDouble(priceText);
             
             dbSetup my = new dbSetup();
-            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            Connection conn = getConnection();
             
-            String sql = "INSERT INTO menu (item_name, price) VALUES (?, ?)";
+            String sql = "INSERT INTO menu (id, item_name, price) VALUES ((SELECT COALESCE(MAX(id), 0) + 1 FROM menu), ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, name);
             pstmt.setDouble(2, price);
@@ -258,6 +276,95 @@ public class ManagerDashboardController {
             e.printStackTrace();
             menuStatusLabel.setText("Database Error: Check console.");
         }
+    }
+
+    private void addInventoryItemToDB() {
+        String name = invNameInput.getText().trim();
+        String qtyText = invQtyInput.getText().trim();
+        String unit = invUnitInput.getText().trim();
+
+        if (name.isEmpty() || qtyText.isEmpty() || unit.isEmpty()) {
+            invStatusLabel.setText("Error: Please fill in all fields.");
+            invStatusLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        try {
+            int qty = Integer.parseInt(qtyText);
+            Connection conn = getConnection();
+            
+            String sql = "INSERT INTO inventory (id, item_name, quantity, unit) VALUES ((SELECT COALESCE(MAX(id), 0) + 1 FROM inventory), ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            pstmt.setInt(2, qty);
+            pstmt.setString(3, unit);
+            
+            pstmt.executeUpdate(); 
+            conn.close();
+            
+            invStatusLabel.setText("Success: Added " + name + "!");
+            invStatusLabel.setStyle("-fx-text-fill: green;");
+            
+            invNameInput.clear();
+            invQtyInput.clear();
+            invUnitInput.clear();
+            
+            loadInventory();
+
+        } catch (NumberFormatException nfe) {
+            invStatusLabel.setText("Error: Quantity must be a whole number.");
+            invStatusLabel.setStyle("-fx-text-fill: red;");
+        } catch (Exception e) {
+            e.printStackTrace();
+            invStatusLabel.setText("Database Error: Check console.");
+            invStatusLabel.setStyle("-fx-text-fill: red;");
+        }
+    }
+
+    private void addEmployeeToDB() {
+        String name = empNameInput.getText().trim();
+        String role = empRoleInput.getText().trim();
+
+        if (name.isEmpty() || role.isEmpty()) {
+            empStatusLabel.setText("Error: Please fill in all fields.");
+            empStatusLabel.setStyle("-fx-text-fill: red;");
+            return;
+        }
+
+        try {
+            Connection conn = getConnection();
+            
+            String sql = "INSERT INTO employees (id, name, role) VALUES ((SELECT COALESCE(MAX(id), 0) + 1 FROM employees), ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            pstmt.setString(2, role);
+            
+            pstmt.executeUpdate(); 
+            conn.close();
+            
+            empStatusLabel.setText("Success: Added " + name + "!");
+            empStatusLabel.setStyle("-fx-text-fill: green;");
+            
+            empNameInput.clear();
+            empRoleInput.clear();
+            
+            loadSchedule();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            empStatusLabel.setText("Database Error: Check console.");
+            empStatusLabel.setStyle("-fx-text-fill: red;");
+        }
+    }
+
+    private Connection getConnection() throws SQLException {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        dbSetup my = new dbSetup();
+        return DriverManager.getConnection(DB_URL, my.user, my.pswd);
     }
 
 }
