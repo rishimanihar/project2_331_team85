@@ -1,39 +1,37 @@
-package app.src.main.java;
-import javafx.beans.property.*;
-
 public class Models {
+
     public static class MenuItem {
-        public SimpleIntegerProperty id;
-        public SimpleStringProperty name;
-        public SimpleDoubleProperty price;
+        private int id;
+        private String name;
+        private double price;
+
         public MenuItem(int id, String name, double price) {
-            this.id = new SimpleIntegerProperty(id);
-            this.name = new SimpleStringProperty(name);
-            this.price = new SimpleDoubleProperty(price);
+            this.id = id;
+            this.name = name;
+            this.price = price;
         }
+
+        public int getId() { return id; }
+        public String getName() { return name; }
+        public double getPrice() { return price; }
     }
 
     public static class InventoryItem {
-        public SimpleIntegerProperty id;
-        public SimpleStringProperty name;
-        public SimpleIntegerProperty quantity;
-        public SimpleStringProperty unit;
-        public InventoryItem(int id, String name, int quantity, String unit) {
-            this.id = new SimpleIntegerProperty(id);
-            this.name = new SimpleStringProperty(name);
-            this.quantity = new SimpleIntegerProperty(quantity);
-            this.unit = new SimpleStringProperty(unit);
-        }
-    }
+        private int id;
+        private String name;
+        private int quantity;
+        private String unit;
 
-    public static class Employee {
-        public SimpleIntegerProperty id;
-        public SimpleStringProperty name;
-        public SimpleStringProperty role;
-        public Employee(int id, String name, String role) {
-            this.id = new SimpleIntegerProperty(id);
-            this.name = new SimpleStringProperty(name);
-            this.role = new SimpleStringProperty(role);
+        public InventoryItem(int id, String name, int quantity, String unit) {
+            this.id = id;
+            this.name = name;
+            this.quantity = quantity;
+            this.unit = unit;
         }
+
+        public int getId() { return id; }
+        public String getName() { return name; }
+        public int getQuantity() { return quantity; }
+        public String getUnit() { return unit; }
     }
 }

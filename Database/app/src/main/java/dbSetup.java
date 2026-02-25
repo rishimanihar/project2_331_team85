@@ -1,4 +1,3 @@
-package app.src.main.java;
 /*
 CSCE 331
 Database setup example

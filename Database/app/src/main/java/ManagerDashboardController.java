@@ -1,4 +1,3 @@
-package app.src.main.java;
 import java.sql.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -35,6 +34,18 @@ public class ManagerDashboardController {
     @FXML private TextField chatInput;
     @FXML private Button sendButton;
 
+    // Menu update UI (not implemented yet)
+    // Menu Management UI
+    @FXML private TableView<Models.MenuItem> menuTable;
+    @FXML private TableColumn<Models.MenuItem, Integer> menuIdCol;
+    @FXML private TableColumn<Models.MenuItem, String> menuNameCol;
+    @FXML private TableColumn<Models.MenuItem, Double> menuPriceCol;
+    @FXML private TextField menuNameInput;
+    @FXML private TextField menuPriceInput;
+    @FXML private Button addMenuBtn;
+    @FXML private Label menuStatusLabel;
+
+
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
 
     @FXML
@@ -55,6 +66,15 @@ public class ManagerDashboardController {
         // Chat functionality
         sendButton.setOnAction(e -> sendMessage());
         chatInput.setOnAction(e -> sendMessage()); 
+
+        // Menu management
+        menuIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        menuNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        menuPriceCol.setCellValueFactory(new PropertyValueFactory<>("price"));
+
+        // Load the menu from DB and set button action
+        loadMenuData();
+        addMenuBtn.setOnAction(e -> addMenuItemToDB());
     }
 
     private void sendMessage() {
@@ -95,10 +115,10 @@ public class ManagerDashboardController {
         series.setName("Daily Sales (Last 14 Days)");
         
         // Queries the orders table
-        String sql = "SELECT TRIM(to_char(order_timestamp, 'Day')) AS day_of_week, SUM(total_amount) AS total_revenue " +
+        String sql = "SELECT TRIM(to_char(order_time, 'Day')) AS day_of_week, SUM(total_price) AS total_revenue " +
                     "FROM orders " +
-                    "GROUP BY day_of_week, EXTRACT(ISODOW FROM order_timestamp) " +
-                    "ORDER BY EXTRACT(ISODOW FROM order_timestamp)";
+                    "GROUP BY day_of_week, EXTRACT(ISODOW FROM order_time) " +
+                    "ORDER BY EXTRACT(ISODOW FROM order_time)";
         try {
             dbSetup my = new dbSetup();
             Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
@@ -124,9 +144,9 @@ public class ManagerDashboardController {
     }
 
     private void loadQuarterlyOverview() {
-        String sql = "SELECT COUNT(id) as total_orders, SUM(total_amount) as total_rev " +
-                     "FROM orders " +
-                     "WHERE order_timestamp >= NOW() - INTERVAL '3 months'";
+        String sql = "SELECT COUNT(order_id) as total_orders, SUM(total_price) as total_rev " +
+                    "FROM orders " +
+                    "WHERE order_time >= NOW() - INTERVAL '3 months'";
                      
         try {
             dbSetup my = new dbSetup();
@@ -178,4 +198,66 @@ public class ManagerDashboardController {
             scheduleList.getItems().add(day + ": " + morningEmp + " (Morning) | " + eveningEmp + " (Evening)");
         }
     }
+
+    private void loadMenuData() {
+        ObservableList<Models.MenuItem> menuList = FXCollections.observableArrayList();
+        try {
+            dbSetup my = new dbSetup();
+            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            Statement stmt = conn.createStatement();
+            
+            // Query your menu table
+            ResultSet rs = stmt.executeQuery("SELECT id, item_name, price FROM menu ORDER BY id ASC");
+            while (rs.next()) {
+                menuList.add(new Models.MenuItem(
+                    rs.getInt("id"),
+                    rs.getString("item_name"),
+                    rs.getDouble("price")
+                ));
+            }
+            menuTable.setItems(menuList);
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addMenuItemToDB() {
+        String name = menuNameInput.getText().trim();
+        String priceText = menuPriceInput.getText().trim();
+
+        if (name.isEmpty() || priceText.isEmpty()) {
+            menuStatusLabel.setText("Error: Please fill in both fields.");
+            return;
+        }
+
+        try {
+            double price = Double.parseDouble(priceText);
+            
+            dbSetup my = new dbSetup();
+            Connection conn = DriverManager.getConnection(DB_URL, my.user, my.pswd);
+            
+            String sql = "INSERT INTO menu (item_name, price) VALUES (?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, name);
+            pstmt.setDouble(2, price);
+            
+            pstmt.executeUpdate(); 
+            conn.close();
+            
+            menuStatusLabel.setText("Success: Added " + name + " to the database!");
+            
+            menuNameInput.clear();
+            menuPriceInput.clear();
+            
+            loadMenuData();
+
+        } catch (NumberFormatException nfe) {
+            menuStatusLabel.setText("Error: Price must be a number.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            menuStatusLabel.setText("Database Error: Check console.");
+        }
+    }
+
 }
