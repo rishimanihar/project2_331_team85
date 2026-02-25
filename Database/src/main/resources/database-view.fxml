@@ -2,12 +2,13 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.geometry.Insets?>
 
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
-         prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" 
+         prefHeight="768.0" prefWidth="1024.0" tabClosingPolicy="UNAVAILABLE" 
          xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" 
-         fx:controller="DatabaseController">
+         fx:controller="ManagerDashboardController">
   <tabs>
     <Tab text="Cashier">
       <content>
@@ -16,26 +17,26 @@
             <VBox spacing="10">
               <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
               <Label text="Menu Items" style="-fx-font-size: 18; -fx-font-weight: bold;"/>
-              <ScrollPane fitToWidth="true" prefHeight="400.0">
+              <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
                 <content>
-                  <FlowPane fx:id="buttonContainer" hgap="10.0" vgap="10.0" prefWrapLength="500.0" />
+                  <FlowPane fx:id="buttonContainer" hgap="10.0" vgap="10.0" prefWrapLength="600.0" />
                 </content>
               </ScrollPane>
             </VBox>
           </center>
           <right>
-            <VBox spacing="10" prefWidth="250.0" style="-fx-background-color: #f4f4f4;">
+            <VBox spacing="10" prefWidth="300.0" style="-fx-background-color: #f4f4f4;">
               <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
               <Label text="Current Order" style="-fx-font-weight: bold;"/>
               <TableView fx:id="cartList" VBox.vgrow="ALWAYS">
                 <columns>
-                  <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Item" />
-                  <TableColumn fx:id="priceColumn" prefWidth="75.0" text="Price" />
+                  <TableColumn fx:id="nameColumn" prefWidth="180.0" text="Item" />
+                  <TableColumn fx:id="priceColumn" prefWidth="100.0" text="Price" />
                 </columns>
               </TableView>
-              <Label fx:id="totalLabel" style="-fx-font-size: 16; -fx-font-weight: bold;" text="Total: $0.00" />
+              <Label fx:id="totalLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" text="Total: \$0.00" />
               <Button fx:id="queryButton" maxWidth="Infinity" text="Refresh Menu" />
-              <Button fx:id="submitOrderButton" maxWidth="Infinity" style="-fx-base: #2ecc71;" text="Submit Order" />
+              <Button fx:id="submitOrderButton" maxWidth="Infinity" style="-fx-base: #2ecc71; -fx-font-weight: bold;" text="Submit Order" />
               <Separator/>
               <Button fx:id="closeButton" maxWidth="Infinity" text="Exit Application" style="-fx-base: #e74c3c; -fx-text-fill: white;" />
             </VBox>
@@ -44,20 +45,43 @@
       </content>
     </Tab>
 
-    <Tab text="Manager">
+    <Tab text="Manager Dashboard">
       <content>
-        <VBox spacing="20">
-            <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-            <Label text="Manager Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold;"/>
-            <HBox spacing="10">
-                <Button text="Manage Inventory" prefWidth="150" prefHeight="50"/>
-                <Button text="Manage Menu" prefWidth="150" prefHeight="50"/>
-                <Button text="Employee Management" prefWidth="150" prefHeight="50"/>
-                <Button text="View Reports" prefWidth="150" prefHeight="50"/>
+        <HBox spacing="15">
+          <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+          
+          <VBox spacing="15" HBox.hgrow="ALWAYS">
+            <HBox spacing="20">
+               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd;">
+                  <Label text="Total Orders" style="-fx-text-fill: #7f8c8d;"/>
+                  <Label fx:id="ordersLabel" text="0" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+               </VBox>
+               <VBox style="-fx-background-color: #ffffff; -fx-padding: 10; -fx-border-color: #ddd;">
+                  <Label text="Total Revenue" style="-fx-text-fill: #7f8c8d;"/>
+                  <Label fx:id="revenueLabel" text="\$0.00" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #27ae60;"/>
+               </VBox>
             </HBox>
-            <Separator/>
-            <Label text="Select a category above to view and update database records." style="-fx-font-style: italic;"/>
-        </VBox>
+            
+            <LineChart fx:id="trendsChart" title="Sales Trends (Last 14 Days)" VBox.vgrow="ALWAYS">
+              <xAxis><CategoryAxis side="BOTTOM" /></xAxis>
+              <yAxis><NumberAxis side="LEFT" /></yAxis>
+            </LineChart>
+          </VBox>
+
+          <VBox spacing="15" prefWidth="350">
+            <Label text="Inventory Status" style="-fx-font-weight: bold;"/>
+            <TableView fx:id="inventoryTable" prefHeight="300">
+              <columns>
+                <TableColumn fx:id="invNameCol" prefWidth="150" text="Item" />
+                <TableColumn fx:id="invQtyCol" prefWidth="80" text="Qty" />
+                <TableColumn fx:id="invUnitCol" prefWidth="80" text="Unit" />
+              </columns>
+            </TableView>
+            
+            <Label text="Employee Schedule" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
+          </VBox>
+        </HBox>
       </content>
     </Tab>
   </tabs>

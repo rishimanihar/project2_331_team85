@@ -7,7 +7,7 @@ public class DatabaseApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("database-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 1024, 768);
         stage.setTitle("POS System");
         stage.setScene(scene);
         stage.show();
