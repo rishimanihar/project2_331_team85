@@ -1,5 +1,7 @@
 
 import java.sql.*;
+
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -20,6 +22,8 @@ public class ManagerDashboardController {
     @FXML private Label revenueLabel;
     @FXML private Label ordersLabel;
     @FXML private ListView<String> scheduleList;
+    @FXML private ListView<String> employeeList;
+    @FXML private TextField employeeNameField;
 
     // --- FXML UI Elements (Cashier Side) ---
     @FXML private FlowPane buttonContainer;
@@ -48,20 +52,11 @@ public class ManagerDashboardController {
         loadItemTrends();
         loadQuarterlyOverview();
         loadMenuButtons();
+        loadEmployees();
 
         if (queryButton != null) {
             queryButton.setOnAction(event -> loadMenuButtons());
         }
-
-        scheduleList.getItems().addAll(
-            "Mon: Rishi (Morning), Mo (Evening)",
-            "Tue: Brayden (Morning), Arul (Evening)",
-            "Wed: Aayush (Morning), Mo (Evening)",
-            "Thu: Brayden (Morning), Arul (Evening)",
-            "Fri: Rishi (Morning), Aayush (Evening)",
-            "Sat: Mo (Morning), Brayden (Evening)",
-            "Sun: Arul (Morning), Aayush (Evening)"
-        );
     }
 
     private void loadMenuButtons() {
@@ -113,6 +108,22 @@ public class ManagerDashboardController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void loadEmployees() {
+        employeeList.getItems().clear(); 
+        String sql = "SELECT name FROM employees ORDER BY name ASC";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, dbSetup.user, dbSetup.pswd);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                employeeList.getItems().add(rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            System.err.println("[SQL ERROR] Failed to load employees: " + e.getMessage());
+          }
     }
 
     private void loadItemTrends() {
@@ -175,5 +186,62 @@ public class ManagerDashboardController {
         cartData.add(modifier);
         
         System.out.println("[LOG] Added customization: " + prefix + customValue);
+    }
+
+    @FXML
+    public void handleAddEmployee(javafx.event.ActionEvent event) {
+        String newEmployee = employeeNameField.getText();
+
+        if (newEmployee != null && !newEmployee.trim().isEmpty()) {
+            String sql = "INSERT INTO employees (name) VALUES (?)";
+
+            try (Connection conn = DriverManager.getConnection(DB_URL, dbSetup.user, dbSetup.pswd);
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                
+                pstmt.setString(1, newEmployee.trim());
+                pstmt.executeUpdate(); // Executes the insert
+
+                // Update the GUI only if the database insert was successful
+                employeeList.getItems().add(newEmployee.trim());
+                employeeNameField.clear(); // Empties the text box
+                
+                System.out.println("[LOG] Successfully added: " + newEmployee);
+
+            } catch (SQLException e) {
+                System.err.println("[SQL ERROR] Could not add employee: " + e.getMessage());
+            }
+        } else {
+            System.out.println("[WARNING] Employee name cannot be blank.");
+        }
+    }
+
+    // --- REMOVE EMPLOYEE ---
+    @FXML
+    public void handleRemoveEmployee(javafx.event.ActionEvent event) {
+        // Find exactly which name the manager clicked on in the list
+        String selectedEmployee = employeeList.getSelectionModel().getSelectedItem();
+
+        if (selectedEmployee != null) {
+            // SQL DELETE command
+            String sql = "DELETE FROM employees WHERE name = ?";
+
+            try (Connection conn = DriverManager.getConnection(DB_URL, dbSetup.user, dbSetup.pswd);
+                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                
+                pstmt.setString(1, selectedEmployee);
+                int rowsAffected = pstmt.executeUpdate(); // Executes the delete
+
+                if (rowsAffected > 0) {
+                    // Update the GUI only if the database delete was successful
+                    employeeList.getItems().remove(selectedEmployee);
+                    System.out.println("[LOG] Successfully removed: " + selectedEmployee);
+                }
+
+            } catch (SQLException e) {
+                System.err.println("[SQL ERROR] Could not remove employee: " + e.getMessage());
+            }
+        } else {
+            System.out.println("[WARNING] Please click an employee in the list to remove them.");
+        }
     }
 }

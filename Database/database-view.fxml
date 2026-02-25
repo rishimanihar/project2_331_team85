@@ -100,8 +100,17 @@
               </columns>
             </TableView>
             
-            <Label text="Employee Schedule" style="-fx-font-weight: bold;"/>
-            <ListView fx:id="scheduleList" VBox.vgrow="ALWAYS" />
+            <VBox spacing="10" VBox.vgrow="ALWAYS">
+              <Label text="Employee Roster" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
+    
+              <ListView fx:id="employeeList" VBox.vgrow="ALWAYS" prefHeight="200"/>
+    
+                <HBox spacing="10">
+                  <TextField fx:id="employeeNameField" promptText="Enter new employee name..." HBox.hgrow="ALWAYS"/>
+                  <Button text="Add" onAction="#handleAddEmployee" style="-fx-base: #2ecc71;"/>
+                  <Button text="Remove" onAction="#handleRemoveEmployee" style="-fx-base: #e74c3c; -fx-text-fill: white;"/>
+                </HBox>
+            </VBox>
           </VBox>
         </HBox>
       </content>
