@@ -9,12 +9,13 @@ import javafx.scene.layout.FlowPane;
 
 public class CashierController {
 
-    // ALL OF THESE NOW MATCH YOUR FXML FILE EXACTLY
-    @FXML private FlowPane buttonContainer; 
+    @FXML private FlowPane buttonContainer;
     @FXML private ListView<String> cartList;
     @FXML private Label totalLabel;
-    @FXML private Button submitOrderButton; 
-    @FXML private Button queryButton; 
+    @FXML private Label statusLabel;
+    @FXML private Button submitOrderButton;
+    @FXML private Button clearBtn;
+    @FXML private Button queryButton;
 
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
     
@@ -24,14 +25,14 @@ public class CashierController {
     @FXML
     public void initialize() {
         loadMenuButtons();
-        // Hooking up the FXML buttons to their logic
         submitOrderButton.setOnAction(e -> checkoutOrder());
+        clearBtn.setOnAction(e -> clearCart());
         queryButton.setOnAction(e -> {
-        loadMenuButtons();
-        System.out.println("Menu manually refreshed from database!");
-    });
+            loadMenuButtons();
+            statusLabel.setText("Menu refreshed!");
+        });
     }
-    
+
     @FXML
     public void handleCustomizationClick(ActionEvent event) {
         System.out.println("Customization button clicked!");
@@ -66,6 +67,7 @@ public class CashierController {
         
         currentTotal += price;
         totalLabel.setText("Total: $" + String.format("%.2f", currentTotal));
+        statusLabel.setText("Item added.");
     }
 
     private void clearCart() {
@@ -73,11 +75,12 @@ public class CashierController {
         cartList.getItems().clear();
         currentTotal = 0.0;
         totalLabel.setText("Total: $0.00");
+        statusLabel.setText("Order cleared.");
     }
 
     private void checkoutOrder() {
         if (cartItemIds.isEmpty()) {
-            System.out.println("Cannot checkout an empty order!");
+            statusLabel.setText("Cannot checkout empty order!");
             return;
         }
 
@@ -101,6 +104,7 @@ public class CashierController {
                 itemStmt.executeBatch();
                 
                 System.out.println("[LOG] Successfully processed order #" + newOrderId + " for $" + currentTotal);
+                statusLabel.setText("Success! Order #" + newOrderId + " saved.");
                 
                 cartItemIds.clear();
                 cartList.getItems().clear();
@@ -109,15 +113,12 @@ public class CashierController {
             }
         } catch (Exception e) {
             System.out.println("[LOG] Database Checkout Error: " + e.getMessage());
+            statusLabel.setText("Error saving order.");
         }
     }
 
     private Connection getConnection() throws SQLException {
-        try {
-            Class.forName("org.postgresql.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        try { Class.forName("org.postgresql.Driver"); } catch (Exception e) {}
         dbSetup my = new dbSetup();
         return DriverManager.getConnection(DB_URL, my.user, my.pswd);
     }

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane prefHeight="600.0" prefWidth="800.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ReportingController">
+    <Tab text="Sales Report">
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+            <HBox alignment="CENTER" spacing="10">
+                <DatePicker fx:id="salesStartDatePicker" promptText="Start Date" />
+                <DatePicker fx:id="salesEndDatePicker" promptText="End Date" />
+                <Button fx:id="generateSalesReportBtn" style="-fx-background-color: #2ecc71; -fx-text-fill: white;" text="Run Sales Report" />
+            </HBox>
+            <TableView fx:id="salesTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="salesItemCol" prefWidth="250" text="Item" />
+                    <TableColumn fx:id="salesQuantityCol" prefWidth="150" text="Quantity Sold" />
+                    <TableColumn fx:id="salesRevenueCol" prefWidth="150" text="Revenue ($)" />
+                </columns>
+            </TableView>
+        </VBox>
+    </Tab>
+
+    <Tab text="X &amp; Z Reports">
+        <HBox spacing="15">
+            <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Button fx:id="generateXReportBtn" maxWidth="Infinity" style="-fx-background-color: #3498db; -fx-text-fill: white;" text="Generate X-Report (Today's Running Sales)" />
+                <TextArea fx:id="xReportArea" editable="false" style="-fx-font-family: monospace;" VBox.vgrow="ALWAYS" />
+            </VBox>
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <Label fx:id="lastZReportLabel" style="-fx-font-weight: bold;" text="Last Z-Report: Checking..." />
+                <Button fx:id="generateZReportBtn" maxWidth="Infinity" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" text="Generate Z-Report (End of Day Close)" />
+                <TextArea fx:id="zReportArea" editable="false" style="-fx-font-family: monospace;" VBox.vgrow="ALWAYS" />
+            </VBox>
+        </HBox>
+    </Tab>
+
+    <Tab text="Product Usage">
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+            <HBox alignment="CENTER" spacing="10">
+                <DatePicker fx:id="startDatePicker" promptText="Start Date" />
+                <DatePicker fx:id="endDatePicker" promptText="End Date" />
+                <Button fx:id="generateUsageBtn" text="Generate Usage Chart" />
+            </HBox>
+            <BarChart fx:id="usageChart" VBox.vgrow="ALWAYS">
+                <xAxis><CategoryAxis label="Inventory Item" /></xAxis>
+                <yAxis><NumberAxis label="Quantity Used" /></yAxis>
+            </BarChart>
+        </VBox>
+    </Tab>
+
+    <Tab text="Advanced Add Menu Item">
+        <VBox alignment="CENTER" spacing="10">
+            <padding><Insets bottom="15" left="15" right="15" top="15" /></padding>
+            <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Add Item with Ingredients" />
+            <TextField fx:id="newItemName" maxWidth="300" promptText="Drink Name" />
+            <TextField fx:id="newItemPrice" maxWidth="300" promptText="Price" />
+            <Label text="Ingredients (Format: Inventory Name, Quantity)" />
+            <TextArea fx:id="ingredientsArea" maxWidth="300" prefHeight="150" promptText="Milk, 0.5&#10;Sugar, 0.1" />
+            <Button fx:id="addMenuItemBtn" style="-fx-background-color: #9b59b6; -fx-text-fill: white;" text="Add to Database" />
+            <Label fx:id="addItemStatus" text="" />
+        </VBox>
+    </Tab>
+</TabPane>
