@@ -9,9 +9,16 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+/**
+ * Controller class for the Reporting View.
+ * Handles generation of sales reports (X and Z reports), product usage charts,
+ * and menu item management.
+ */
 public class ReportingController {
+    // Database connection string
     private static final String DB_URL = "jdbc:postgresql://csce-315-db.engr.tamu.edu/team_85_db";
     
+    // UI Components for Product Usage
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
     @FXML private TableView<Models.UsageItem> usageTable;
@@ -19,13 +26,16 @@ public class ReportingController {
     @FXML private TableColumn<Models.UsageItem, Double> usageQuantityCol;
     @FXML private Button generateUsageBtn;
     
+    // UI Components for X-Report
     @FXML private TextArea xReportArea;
     @FXML private Button generateXReportBtn;
     
+    // UI Components for Z-Report
     @FXML private TextArea zReportArea;
     @FXML private Button generateZReportBtn;
     @FXML private Label lastZReportLabel;
     
+    // UI Components for Sales Report
     @FXML private DatePicker salesStartDatePicker;
     @FXML private DatePicker salesEndDatePicker;
     @FXML private TableView<Models.SalesItem> salesTable;
@@ -34,12 +44,17 @@ public class ReportingController {
     @FXML private TableColumn<Models.SalesItem, Double> salesRevenueCol;
     @FXML private Button generateSalesReportBtn;
     
+    // UI Components for Adding Menu Items
     @FXML private TextField newItemName;
     @FXML private TextField newItemPrice;
     @FXML private TextArea ingredientsArea;
     @FXML private Button addMenuItemBtn;
     @FXML private Label addItemStatus;
 
+    /**
+     * Initializes the controller class.
+     * Sets up table columns, event handlers, and checks the status of the last Z-Report.
+     */
     @FXML
     public void initialize() {
         setupUsageTable();
@@ -48,24 +63,37 @@ public class ReportingController {
         checkLastZReport();
     }
 
-    // Helper to ensure driver is loaded
+    /**
+     * Establishes a connection to the database using credentials from dbSetup.
+     * @return Connection object
+     * @throws SQLException if connection fails
+     */
     private Connection getConnection() throws SQLException {
         try { Class.forName("org.postgresql.Driver"); } catch (Exception e) {}
         dbSetup my = new dbSetup();
         return DriverManager.getConnection(DB_URL, my.user, my.pswd);
     }
 
+    /**
+     * Configures the columns for the Product Usage table.
+     */
     private void setupUsageTable() {
         usageItemCol.setCellValueFactory(new PropertyValueFactory<>("itemName"));
         usageQuantityCol.setCellValueFactory(new PropertyValueFactory<>("quantityUsed"));
     }
 
+    /**
+     * Configures the columns for the Sales Report table.
+     */
     private void setupSalesTable() {
         salesItemCol.setCellValueFactory(new PropertyValueFactory<>("itemName"));
         salesQuantityCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         salesRevenueCol.setCellValueFactory(new PropertyValueFactory<>("revenue"));
     }
 
+    /**
+     * Binds button actions to their respective methods.
+     */
     private void setupEventHandlers() {
         generateUsageBtn.setOnAction(e -> generateProductUsageChart());
         generateXReportBtn.setOnAction(e -> generateXReport());
@@ -74,6 +102,10 @@ public class ReportingController {
         addMenuItemBtn.setOnAction(e -> addNewMenuItem());
     }
 
+    /**
+     * Checks the database for the most recent Z-Report date.
+     * Disables the Z-Report button if one has already been run today.
+     */
     private void checkLastZReport() {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT MAX(report_date) FROM z_reports");
@@ -93,6 +125,9 @@ public class ReportingController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Loads the content of the Z-Report generated today, if it exists.
+     */
     private void loadTodaysZReport() {
         String sql = "SELECT total_orders, total_revenue, tax_amount FROM z_reports WHERE DATE(report_date) = CURRENT_DATE ORDER BY report_date DESC LIMIT 1";
         
@@ -120,6 +155,10 @@ public class ReportingController {
         }
     }
 
+    /**
+     * Generates a report of inventory usage between two dates.
+     * Queries the database for ingredient usage based on orders.
+     */
     private void generateProductUsageChart() {
         if (startDatePicker.getValue() == null || endDatePicker.getValue() == null) {
             showAlert("Please select both start and end dates");
@@ -146,6 +185,10 @@ public class ReportingController {
         } catch (Exception e) { showAlert("Error generating usage report: " + e.getMessage()); }
     }
 
+    /**
+     * Generates an X-Report (hourly sales breakdown) for the current day.
+     * Does not reset totals.
+     */
     private void generateXReport() {
         StringBuilder report = new StringBuilder();
         report.append("=== X-REPORT FOR ").append(LocalDate.now().format(DateTimeFormatter.ISO_DATE)).append(" ===\n\n");
@@ -182,6 +225,10 @@ public class ReportingController {
         xReportArea.setText(report.toString());
     }
 
+    /**
+     * Generates a Z-Report (end of day summary) and saves it to the database.
+     * This action effectively "closes" the day.
+     */
     private void generateZReport() {
         StringBuilder report = new StringBuilder();
         LocalDate today = LocalDate.now();
@@ -218,6 +265,9 @@ public class ReportingController {
         } catch (Exception e) { showAlert("Error generating Z-Report: " + e.getMessage()); }
     }
 
+    /**
+     * Generates a sales report for menu items within a date range.
+     */
     private void generateSalesReport() {
         if (salesStartDatePicker.getValue() == null || salesEndDatePicker.getValue() == null) {
             showAlert("Please select dates"); return;
@@ -238,6 +288,9 @@ public class ReportingController {
         } catch (Exception e) { showAlert("Error: " + e.getMessage()); }
     }
 
+    /**
+     * Adds a new item to the menu database.
+     */
     private void addNewMenuItem() {
         String name = newItemName.getText().trim();
         String priceText = newItemPrice.getText().trim();
@@ -259,6 +312,10 @@ public class ReportingController {
         } catch (Exception e) { showAlert("Error: " + e.getMessage()); }
     }
 
+    /**
+     * Displays an alert dialog with a specific message.
+     * @param msg The message to display
+     */
     private void showAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
